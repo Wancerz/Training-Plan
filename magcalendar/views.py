@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 from django.http import HttpResponse
 # Create your views here.
@@ -8,7 +8,7 @@ from django.http import HttpResponse
 # def say_hello(request):
 #     return HttpResponse('Hello Word')
 
-
+@login_required(login_url='LoginSite')
 def say_hello(request):
     x = 1
     y = 2

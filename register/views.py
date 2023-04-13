@@ -4,25 +4,29 @@ from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from .forms import SignUpForm,LogInForm
 from django.contrib import messages
+from magcalendar import views as magv
+from django.contrib.auth.decorators import login_required
+# from magcalendar import say_hello as 
 # Create your views here.
 
 
 def register(request):
     # print(request.POST)
-    
-
-
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('username')
-            messages.success(request,'Account was created for' + user)
-            return redirect('login')
-
+    if request.user.is_authenticated:
+         return redirect("CalendarSite")
     else:
-            # print(form.errors)
-            form = SignUpForm()
+
+        if request.method == 'POST':
+            form = SignUpForm(request.POST)
+            if form.is_valid():
+                form.save()
+                user = form.cleaned_data.get('username')
+                messages.success(request,'Account was created for ' + user)
+                return redirect('LoginSite')
+
+        else:
+                # print(form.errors)
+                form = SignUpForm()
 
     context = {'form':form
     }
@@ -31,27 +35,35 @@ def register(request):
 
 
 def LoginSite(request):
+    
     print(request.POST)
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
 
-        user = authenticate(request, username=username, passowrd=password)
 
-        if user is not None:
-             login(request, user)
-             redirect('calendar')
+    if request.user.is_authenticated:
+         return redirect("CalendarSite")
+    else:
+        if request.method == 'POST':
+            form = LogInForm(request.POST)
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            
+            user = authenticate(request, username=username, password=password)
 
-    # if request.method == 'POST':
-    #     form = SignUpForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('/')
+            if user is not None:
+                login(request, user)
+                return redirect(magv.say_hello)
+            else:
+                messages.info(request, "Username or password is incorrect")
+        else:
+            form = LogInForm()
 
-    # else:
-    #         # print(form.errors)
-    #         form = SignUpForm()
-    form = LogInForm()
-    context = {'form':form
+
+    context = {
+         'form':form
     }
     return render(request, "login/login.html", context)
+
+
+def LogoutSite(request):
+     logout(request)
+     return redirect('LoginSite')
