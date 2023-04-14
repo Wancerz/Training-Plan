@@ -9,9 +9,12 @@ from register import views as v
 
 # URLConf
 urlpatterns = [
-    path('', views.mainsite),
+    path("", views.HomePageSite, name="HomePageSite"),
+    path("HomePage/", views.HomePageSite, name="HomePageSite"),
+    # path('',views.Main, name = "MainSite"),
     path("register/",v.register, name = "RegisterSite"),
     path("login/",v.LoginSite, name = "LoginSite"),
-    path('magcalendar/', views.say_hello, name = "CalendarSite"),
-    path("logout/",v.LogoutSite, name = "LogoutSite")
+    path('magcalendar/', views.CalendarSite, name = "CalendarSite"),
+    path("logout/",v.LogoutSite, name = "LogoutSite"),
+
 ]

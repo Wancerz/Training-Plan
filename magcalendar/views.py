@@ -8,14 +8,23 @@ from django.http import HttpResponse
 # def say_hello(request):
 #     return HttpResponse('Hello Word')
 
+def Main(request):
+    x = 1
+    y = 2
+    return render(request, 'main.html')
+
+def HomePageSite(request):
+    x = 1
+    y = 2
+    return render(request, 'HomePage.html')
+
 @login_required(login_url='LoginSite')
-def say_hello(request):
+def CalendarSite(request):
     x = 1
     y = 2
     return render(request, 'calendar.html', {'name' : 'Wanat'})
 
 
-def mainsite(request):
-    x = 1
-    y = 2
-    return render(request, 'main.html')
+
+
+

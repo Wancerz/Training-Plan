@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', views.mainsite),
     path('', include('magcalendar.urls')),
-    path('register/', include('magcalendar.urls'))
+    # path('register/', include('magcalendar.urls'))
 ]
