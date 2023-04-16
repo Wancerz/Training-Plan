@@ -51,7 +51,7 @@ def LoginSite(request):
 
             if user is not None:
                 login(request, user)
-                return redirect(magv.say_hello)
+                return redirect("CalendarSite")
             else:
                 messages.info(request, "Username or password is incorrect")
         else:
