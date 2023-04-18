@@ -379,12 +379,12 @@
 
 
 </head>
+{% csrf_token %}
 
 
 
 
-
-<body class="sb-nav-fixed">
+<body class="sb-nav-fixed" onload="loadTableData();">
 
     {% comment %} ############################################ NNAVBAR
     GÓRA###################################################### {% endcomment %}
@@ -469,7 +469,7 @@
 
                         <div id="showcase-wrapper">
                             <div id="myCalendarWrapper"></div>
-                             <div id="example">
+                             {% comment %} <div id="example"> {% endcomment %}
                                 {% comment %} <h3>currentValue: {% endcomment %}
                                     {% comment %} <p id="current-date"></p> {% endcomment %}
                                 {% comment %} </h3> {% endcomment %}
@@ -479,7 +479,8 @@
                                 {% comment %} <h3>currentValue.toDateSring(): {% endcomment %}
                                     {% comment %} <p id="current-datestring"></p> {% endcomment %}
                                 {% comment %} </h3> {% endcomment %}
-                            </div> 
+                            {% comment %} 
+                             {% endcomment %}
                         </div>
 
 
@@ -538,8 +539,33 @@
 
                             
 
-                            <ul  id='seconds'>
-                            </ul>
+                            {% comment %} <ul  id='seconds'>
+                                <div class='container'>
+                                    <div class='row'>
+                                        <div class='col'>aa</div><div class='col'>bb</div>
+                                    </div>
+                                    <div class='row'>
+                                        <div class='col'>cc</div>
+                                    </div>
+
+                                </div>
+                            </ul> {% endcomment %}
+
+
+                            <table id='minutes' class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Exercise</th>
+                                    <th scope="col">Repeats</th>
+                                    <th scope="col">Note</th>
+
+                                  </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                              </table>
                             {% comment %} <input type="hidden" value="" name="userid" id="useid" /> {% endcomment %}
 
 
@@ -548,65 +574,101 @@
 
 
 
+
                             <div id="showcase-wrapper">
                                 
                                 <div id="example">
-                                    <h3>currentValue:
+                                     <h3>currentValue:
                                         <p id="current-date"></p>
                                     </h3>
-                                    <h3>currentValue.getDay():
+                                     <h3>currentValue.getDay():
                                         <p id="current-day"></p>
-                                    </h3>
+                                    </h3>  
                                     <h3 id="aaab">currentValue.toDateSring():
                                         <p  id="current-datestring"></p>
                                     </h3>
                                 </div>
                             </div>
-
+                            
                             <script>
-                                $(document).ready(function() {
-                                    // get the initial value of the element
-                                    var currentValue = $('#current-datestring').text();
-                                    
-                                    // attach a DOMSubtreeModified event listener to the element
+                                $.ajaxSetup({
+                                    headers: { "X-CSRFToken": '{{csrf_token}}' }
+                                  });
+
+
+                                $("#example").hide();
+                                
+                                $.ajaxSetup({
+                                    headers: { "X-CSRFToken": '{{csrf_token}}' }
+                                  });
+                                  
+                                  $(document).ready(function() {                                  
+                                    var currentValue = $('#current-datestring').text();                                 
                                     $('#current-datestring').bind('DOMSubtreeModified', function() {
                                       // check if the value has changed
-                                      if ($(this).text() !== currentValue) {
-                                        // value has changed, show an alert
-                                        alert('Value has changed: ' + $(this).text());
-
-
-                                        $.ajax({
-                                            url: "{% url 'show_day_calendar' %}",
-                                            type: 'get',
-                                            contentType: "application/json; charset=utf-8",
-                                            
-                                            data: {
-                                                date: $(this).text()
-                                            },
-                                            success: function(response){
-                                                var data = JSON.parse(response.queryset);
-                                                
-                                                for (var i = 0; i < data.length; i++) {
-                                                    var recordPk = data[i].pk;
-                                                    var createdAt = data[i].fields.created_at;
-                                                    var listItem = $("<li>").text("PK: " + recordPk + ", Created At: " + createdAt);
-                                                    $("#seconds").append(listItem);
-                                                  }
-                                            }
-
-
-                                        });
-
-
-
-
-
+                                      if ($(this).text() !== currentValue) {                                                                              
+                                        loadTableData();
+                                  
                                         // update the currentValue variable with the new value
                                         currentValue = $(this).text();
                                       }
                                     });
                                   });
+                                  
+                                  function loadTableData() {
+                                    var currentDate = $('#current-datestring').text();
+                                    $.ajax({
+                                      url: "{% url 'show_day_calendar' %}",
+                                      type: 'get',
+                                      contentType: "application/json; charset=utf-8",
+                                      data: {
+                                        date: currentDate
+                                      },
+                                      success: function(response){
+                                        var data = JSON.parse(response.queryset);
+                                        var table = $("#minutes tbody");
+                                        table.empty(); // clear the table body
+                                        for (var i = 0; i < data.length; i++) {
+                                          var note = data[i].note;
+                                          var repeats = data[i].repeats;
+                                          var exerciseTitle = data[i].id_Exercises__title;
+                                  
+                                          var row = $("<tr>").appendTo(table);
+                                          $("<td>").text(i + 1).appendTo(row);
+                                          $("<td>").text(exerciseTitle).appendTo(row);
+                                          $("<td>").text(note).appendTo(row);
+                                          $("<td>").text(repeats).appendTo(row);
+                                          var deleteButton = $("<button>").addClass("btn btn-danger").text("Delete").appendTo($("<td>").appendTo(row));
+                                          deleteButton.click(function() {
+                                            var rowValues = $(this).closest("tr").find("td:not(:last-child)").map(function() {
+                                              return $(this).text();
+                                            }).get();
+                                            var scopeValue = $(this).closest("tr").find("th[scope='row']").text(); // get the scope value
+                                            // now you can use the rowValues array to do something with the values
+                                            console.log("Note: " + rowValues[1] + ", Repeats: " + rowValues[2] + ", Exercise Title: " + rowValues[3]);
+                                            
+                                            $.ajax({
+                                              url: "{% url 'delete_row' %}",
+                                              type: 'get',
+                                              contentType: "application/json; charset=utf-8",
+                                              data: {
+                                                exercise: rowValues[1],
+                                                repeats: rowValues[2],
+                                                note: rowValues[3],
+                                                date: currentDate,
+                                                scope: scopeValue
+                                              },
+                                              success: function(response){
+                                                loadTableData();
+                                              }
+                                            });
+                                          });
+                                        }
+                                      }
+                                    });
+                                  }
+                                
+
                             </script>
 
 

@@ -12,7 +12,7 @@ from magcalendar.models import Exercises, Calendar_exercises
 from django.core import serializers
 from datetime import datetime
 from django.contrib.auth.models import User
-
+from django.views.decorators.csrf import csrf_exempt
 import json
 def Main(request):
     x = 1
@@ -65,9 +65,17 @@ def show_day_calendar(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
 
         
-        queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id)
+        queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id).select_related('id_Exercises').values('note','repeats','id_Exercises__title' )
 
-        queryset = serializers.serialize('json',queryset)
+    # for exercise in queryset:
+    #     print(f"Exercise: {exercise.id_Exercises.title}")
+    #     print(f"Note: {exercise.note}")
+    #     print(f"Repeats: {exercise.repeats}")
+
+        # queryset = list(queryset)
+        # queryset = serializers.serialize('json',queryset)
+        print(queryset)
+        queryset = json.dumps(list(queryset))
         # return JsonResponse({'seconds':t}, status=200)
         # queryset = json.dumps(queryset)
         # toJSON()
@@ -76,6 +84,24 @@ def show_day_calendar(request):
 
     return render(request,'calendar.html' )
 
+#coś pomieszałem tutaj i jako repeats wysyła się z fronute note i vice versa
+def delete_row(request):
+     exercise = request.GET.get('exercise')
+     repeats = request.GET.get('note')
+     note = request.GET.get('repeats')
+     date = request.GET.get('date')
+     date = date[4:]
+     date = datetime.strptime(date,"%b %d %Y").date()
+    
+     print("EXERCISE",exercise)
+     print("repeats",repeats)
+     print("note",note)
+     print(date)
+     queryset = Calendar_exercises.objects.filter(created_at=date, note=note, repeats=repeats, id_Exercises__title=exercise, id_User_id=request.user.id)[0]
+     queryset.delete()
+
+     return render(request,'calendar.html' )
+    
 
 
 
