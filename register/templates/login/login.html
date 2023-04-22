@@ -46,7 +46,7 @@
                                                 <label for="form.username.label">Username</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                {{ form.password}}
+                                                {{ form.password1}}
                                                 {% comment %} <input class="form-control" id="inputPassword" type="password" placeholder="Password" /> {% endcomment %}
                                                 <label for="form.password.label">Password</label>
                                             </div>
@@ -55,8 +55,9 @@
                                                 {% comment %} <label class="form-check-label" for="inputRememberPassword">Remember Password</label> {% endcomment %}
                                             {% comment %} </div> {% endcomment %}
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                                <a class="small" href="password.html">Forgot Password?</a>
-                                                <center><button type="submit" class="btn btn-primary btn-block"> Login</button></center>
+                                                <a class="small" href="password.html"></a>
+                                                {% comment %} Forgot Password? {% endcomment %}
+                                                <right><button id='AAA' type="submit" class="btn btn-primary btn-block"> Login</button></right>
                                             </div>
                                         </form>
                                     </div>
@@ -75,9 +76,9 @@
                         <div class="d-flex align-items-center justify-content-between small">
                             <div class="text-muted">Copyright &copy; Jakub Wanat - TrainingPlan 2023</div>
                             <div>
-                                <a href="#">Privacy Policy</a>
+                                <a href="#"></a>
                                 &middot;
-                                <a href="#">Terms &amp; Conditions</a>
+                                <a href="#"></a>
                             </div>
                         </div>
                     </div>

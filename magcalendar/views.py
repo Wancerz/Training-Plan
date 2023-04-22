@@ -92,19 +92,53 @@ def delete_row(request):
      date = request.GET.get('date')
      date = date[4:]
      date = datetime.strptime(date,"%b %d %Y").date()
-    
-     print("EXERCISE",exercise)
-     print("repeats",repeats)
-     print("note",note)
-     print(date)
-     queryset = Calendar_exercises.objects.filter(created_at=date, note=note, repeats=repeats, id_Exercises__title=exercise, id_User_id=request.user.id)[0]
-     queryset.delete()
+     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        print("EXERCISE",exercise)
+        print("repeats",repeats)
+        print("note",note)
+        print(date)
+        queryset = Calendar_exercises.objects.filter(created_at=date, note=note, repeats=repeats, id_Exercises__title=exercise, id_User_id=request.user.id)[0]
+        queryset.delete()
 
      return render(request,'calendar.html' )
     
 
 
+def add_values_to_options(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
 
+        queryset = Exercises.objects.values('title')
+
+
+        for query in queryset:
+            print(query)
+        queryset = json.dumps(list(queryset))
+        
+        print(queryset)
+        return JsonResponse({'queryset':queryset})
+
+
+    return render(request,'calendar.html')
+
+
+def add_exercise_to_db(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        exercise = request.GET.get('exerc')
+        note = request.GET.get('not')
+        rep = request.GET.get('rep')
+        date = request.GET.get('currentDate')
+        date = date[4:]
+        date = datetime.strptime(date,"%b %d %Y").date()
+        
+        exercise = Exercises.objects.get(title=exercise)
+        queryset = Calendar_exercises(note=note, repeats=rep, id_Exercises=exercise, id_User_id = request.user.id, created_at=date)
+        queryset.save()
+        # queryset = Exercises.objects.values('title')
+    
+
+
+
+    return render(request,'calendar.html')
 
 
 

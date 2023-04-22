@@ -448,8 +448,8 @@
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Zalogowano jako użytkownik:</div>
-                    {{request.user}}
+                    <div class="col-auto"><div class="small m-0 text-white">Copyright &copy; Jakub Wanat - TrainingPlan 2023</div></div>
+                    
                 </div>
             </nav>
         </div>
@@ -464,7 +464,7 @@
 
                     <div class="grid-child purple">
                         <center>
-                            <h1>Kalendarz</h1>
+                            <h1>Calendar</h1>
                         </center>
 
                         <div id="showcase-wrapper">
@@ -500,13 +500,13 @@
                      <div class="grid-child green">
                         <center>
                             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-                            <ul> 
+                            {% comment %} <ul> 
                                  {% for query in queryset %}
                                 <li>{{query.created_at}}</li>
                                 {% endfor%} 
-                            </ul>
-                            <h1>Opcje </h1>
-                            <button type="button" class="btn btn-success btn-lg" id="abc">GET</button>
+                            </ul> {% endcomment %}
+                            <h1>Options </h1>
+                            {% comment %} <button type="button" class="btn btn-success btn-lg" id="abc">GET</button> {% endcomment %}
                             <script>
                                 $(document).ready(function(){
                                     $("#abc").click(function(){
@@ -563,8 +563,9 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-
+  
                                 </tbody>
+                                
                               </table>
                             {% comment %} <input type="hidden" value="" name="userid" id="useid" /> {% endcomment %}
 
@@ -636,8 +637,8 @@
                                           var row = $("<tr>").appendTo(table);
                                           $("<td>").text(i + 1).appendTo(row);
                                           $("<td>").text(exerciseTitle).appendTo(row);
-                                          $("<td>").text(note).appendTo(row);
                                           $("<td>").text(repeats).appendTo(row);
+                                          $("<td>").text(note).appendTo(row);
                                           var deleteButton = $("<button>").addClass("btn btn-danger").text("Delete").appendTo($("<td>").appendTo(row));
                                           deleteButton.click(function() {
                                             var rowValues = $(this).closest("tr").find("td:not(:last-child)").map(function() {
@@ -646,7 +647,7 @@
                                             var scopeValue = $(this).closest("tr").find("th[scope='row']").text(); // get the scope value
                                             // now you can use the rowValues array to do something with the values
                                             console.log("Note: " + rowValues[1] + ", Repeats: " + rowValues[2] + ", Exercise Title: " + rowValues[3]);
-                                            
+                                  
                                             $.ajax({
                                               url: "{% url 'delete_row' %}",
                                               type: 'get',
@@ -664,12 +665,107 @@
                                             });
                                           });
                                         }
+                                        
+                                        // Add a new row at the bottom of the table with a select list and two input fields
+                                        var newRow = $("<tr>").appendTo(table);
+                                        $("<td>").text("X").appendTo(newRow);
+                                        $("<td >").append($("<select id ='Exerc'>")).appendTo(newRow);
+                                        $("<td>").append($("<input id='Rep' min='0' required>").attr("type", "number")).appendTo(newRow);
+                                        $("<td>").append($("<input id='Not'>").attr("type", "text")).appendTo(newRow);
+
+
+
+
+                                        //nowy kod tutaj będą zmiany
+
+
+                                        $.ajax({
+                                            url: "{% url 'add_values_to_options' %}",
+                                            method: 'GET',
+                                            success: function(response) {
+                                              // Loop through the response data and add each option to the select element
+                                              var data = JSON.parse(response.queryset);
+                                              
+                                              var newOptions = data.map(function(item) {
+                                                return { value: item.title, text: item.title };
+                                              });
+                                              var jsonStr = JSON.stringify(newOptions);
+                                              var selectElement = $('#Exerc');
+                                              
+                                              // Add the new options to the select element
+                                              $.each(newOptions, function(index, option) {
+                                              selectElement.append('<option value="' + option.value + '">' + option.text + '</option>');
+                                              });
+
+
+                                            },
+                                            error: function(error) {
+                                              console.log(error);
+                                            }
+                                          });
+                                          
+
+
+                                        // Define the new options
+
+
+                                        // Get the select element by its ID
+
+
+                                            
                                       }
                                     });
                                   }
-                                
+
+                                  
+
+                                  
+                                  
+                                  
+                                  
+                                  
+                                  
+
 
                             </script>
+
+
+                            <button id='button_success_to_db' type="button" class="btn btn-success">ADD</button>
+
+                            <script>
+                                $('#button_success_to_db').click(function() {
+                                    var exercValue = $('#Exerc').val();
+                                    var repValue = $('#Rep').val();
+                                    var notValue = $('#Not').val();
+                                    var currentDate = $('#current-datestring').text();
+                                    if (!$.isNumeric(repValue)) {
+                                        alert('Repeats value must be a number!');
+                                        return false;
+                                      }
+                                  
+                                    // Continue with the script if repValue is a number
+                                    // For example, you can send the values to the server using an AJAX request
+                                    $.ajax({
+                                      url: "{% url 'add_exercise_to_db' %}",
+                                      method: 'GET',
+                                      data: {
+                                        exerc: exercValue,
+                                        rep: repValue,
+                                        not: notValue,
+                                        currentDate: currentDate
+                                        
+                                      },
+                                      success: function(response) {
+                                        
+                                        loadTableData();
+                                      },
+                                      error: function(xhr, status, error) {
+                                        alert('Error adding data: ' + error);
+                                      }
+                                    });
+                                  });
+                            </script>
+
 
 
 

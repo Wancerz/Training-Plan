@@ -24,4 +24,4 @@ class LogInForm(UserCreationForm):
     def __init__(self, *args, **kwargs) -> None:
         super(LogInForm, self).__init__(*args, **kwargs)
         self.fields['username'].widget.attrs['class'] = 'form-control'
-        self.fields['password'].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['class'] = 'form-control'
