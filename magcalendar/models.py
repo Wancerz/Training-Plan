@@ -15,3 +15,6 @@ class Calendar_exercises(models.Model):
     note = models.CharField(max_length=255)
     created_at = models.DateField()
     repeats = models.IntegerField()
+
+
+

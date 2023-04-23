@@ -1,0 +1,552 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>TrainingPlan</title>
+    {% comment %}
+    <link href="{% static 'css/calendarpicker.css' %}" rel="stylesheet" /> {% endcomment %}
+
+
+
+    <link href="{% static 'css/styles.css'       %} " rel="stylesheet" />
+
+
+
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/calendarpickerjs@1.4.0"></script>
+
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    {% comment %} <script src="{% static 'staticassets/demo/chart-area-demo.js' %}"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'staticassets/demo/chart-bar-demo.js' %}"></script> {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+
+                {
+                % comment %
+            }
+
+            background-color:#B0E0FF;
+
+                {
+                % endcomment %
+            }
+
+        }
+
+        .sb-sidenav-menu {
+                {
+                % comment %
+            }
+
+            background-color:rgb(30, 144, 255);
+
+                {
+                % endcomment %
+            }
+
+                {
+                % comment %
+            }
+
+            background-color:#3693E4;
+
+                {
+                % endcomment %
+            }
+
+                {
+                % comment %
+            }
+
+            background-color:red;
+
+                {
+                % endcomment %
+            }
+        }
+
+        .sb-sidenav-footer {
+            background-color: #3693E4;
+        }
+
+        .sb-topnav navbar navbar-expand navbar-dark bg-dark {
+            background-color: rgb(30, 144, 255);
+        }
+    </style>
+
+    <style>
+        #calendar-wrapper {
+            width: 100%;
+            display: grid;
+            grid-template-rows: 2.5em 1fr;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+            font-size: inherit;
+        }
+
+        #calendar-wrapper header {
+            grid-row: 1/2;
+            font-size: 2em;
+            box-sizing: inherit;
+        }
+
+        #calendar-wrapper header h4 {
+            padding: 0;
+            margin: 0;
+        }
+
+        #calendar {
+            display: grid;
+            grid-template-columns: 1fr 4em;
+            grid-template-rows: 3em 1fr;
+            box-sizing: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        #calendar #calendar-days,
+        #calendar #calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            align-items: center;
+            padding: 0 1em;
+            box-sizing: inherit;
+            margin: 0;
+        }
+
+        #calendar #calendar-days {
+            justify-items: center;
+            grid-row: 1/2;
+            grid-column: 1/2;
+        }
+
+        #calendar #calendar-grid {
+            grid-template-rows: repeat(6, 1fr);
+            justify-items: flex-start;
+            grid-row: 2/-1;
+            grid-column: 1/2;
+            width: 100%;
+        }
+
+        #calendar #calendar-grid>time {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0.4em;
+            padding: 1em 0.2em;
+            width: 90%;
+            background-color: rgba(108, 108, 108, 0.02);
+            border-radius: 3px;
+            border: 2px solid transparent;
+            transition: box-shadow 200ms, border 100ms;
+            box-shadow: 1px 1px rgba(0, 0, 0, 0);
+            box-sizing: inherit;
+        }
+
+        #calendar #calendar-grid time.selected,
+        #calendar #calendar-grid time.selected:focus {
+            outline: none;
+            border: 2px solid #c64949;
+            box-sizing: inherit;
+        }
+
+        #calendar #calendar-grid time.disabled,
+        #calendar #calendar-grid time.disabled:focus {
+            outline: none;
+            border: 2px solid transparent;
+            box-sizing: inherit;
+            cursor: not-allowed;
+            background-color: rgba(30, 39, 51, 0.2);
+            box-shadow: 1px 1px rgba(0, 0, 0, 0);
+
+        }
+
+        #calendar #calendar-grid>*:hover {
+            border: 2px solid rgba(72, 72, 72, 0.5);
+            box-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+            box-sizing: inherit;
+        }
+
+        #calendar #navigation-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            grid-row: 2/-1;
+            grid-column: 2/-1;
+            box-sizing: inherit;
+            padding: 1em 0 3.5em;
+            margin: 0;
+        }
+
+        #calendar #navigation-wrapper button {
+            cursor: pointer;
+            background: transparent;
+            border: 0;
+            font-size: 3em;
+            width: 1.6em;
+            box-sizing: inherit;
+            padding: 0.1em;
+            margin: 0;
+        }
+
+        #calendar #navigation-wrapper button:hover {
+            opacity: 0.75;
+        }
+
+
+        #calendar #navigation-wrapper button svg {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 1.6em;
+            display: block;
+            box-sizing: inherit;
+        }
+
+        #calendar #navigation-wrapper button:first-of-type {
+            transform: rotate(180deg);
+        }
+
+        #calendar #navigation-wrapper button[disabled] svg {
+            cursor: not-allowed;
+            fill: rgba(30, 39, 51, 0.2);
+        }
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        /* body {
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+            sans-serif;
+    } */
+
+        #github {
+            position: absolute;
+            right: -5rem;
+            top: 0.6rem;
+            background-color: black;
+            transform: rotate(25deg);
+
+        }
+
+        #github a,
+        #github a:link,
+        #github a:visited {
+            display: inline-block;
+            padding: 1rem 8rem;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 300ms;
+        }
+
+        #github a:hover {
+            text-decoration: underline;
+            transform: translateX(0.4rem);
+        }
+
+        #download-options {
+            margin-bottom: 2rem;
+        }
+
+        #download-options h3:last-of-type {
+            margin-top: 2rem;
+        }
+
+        #download-options code {
+            font-size: 1.2rem;
+        }
+
+        #myCalendarWrapper {
+            width: 40em;
+            border: 1px dashed black;
+            padding: 2em 4em;
+            position: relative;
+            font-size: 1rem;
+            margin: 2rem auto 5rem;
+        }
+
+        /* #myCalendarWrapper:before {
+        content: '#myCalendarWrapper';
+        position: absolute;
+        font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 2.4rem);
+        font-size: 1.2rem;
+        background-color: rgba(93, 93, 93, 0.2);
+        padding: 0.5rem 1rem 0.4rem;
+        color: rgb(233, 72, 99);
+    } */
+
+        code {
+            font-size: 0.7rem;
+            background-color: rgb(249, 249, 249);
+            padding: 0.5rem;
+            margin: 1rem 0 3rem;
+            border-radius: 5px;
+            box-shadow: 2px 2px 0.2rem rgba(0, 0, 0, 0.2);
+        }
+
+        code h3 {
+            padding: 0;
+            margin: 0;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+        }
+
+        code pre {
+            font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+        }
+
+        .pink {
+            color: rgb(233, 72, 99);
+        }
+
+        #example {
+            margin: 0 auto;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+        }
+
+        #example h3:not(:first-of-type) {
+            margin-top: 3rem;
+        }
+
+        #example p {
+            font-size: 0.9rem;
+        }
+
+        #download-options {
+            margin-bottom: 5rem;
+        }
+
+        #download-options h2:last-of-type {
+            margin-top: 2rem;
+        }
+
+        #download-options code {
+            font-size: 1.2rem;
+        }
+    </style>
+
+
+
+</head>
+{% csrf_token %}
+
+
+
+
+<body class="sb-nav-fixed" onload="loadTableData();">
+
+    {% comment %} ############################################ NNAVBAR
+    GÓRA###################################################### {% endcomment %}
+    {% comment %}
+    ###################################################################################################################
+    {% endcomment %}
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="{% url 'HomePageSite' %}">TrainingPlan</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
+                class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <!-- <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" /> -->
+                <!-- <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button> -->
+            </div>
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fas fa-user fa-fw"></i>logged in as {{request.user}}</a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    {% comment %} <li><a class="dropdown-item" href="#!">Ustawienia</a></li> {% endcomment %}
+                    <li><a class="dropdown-item" href="#!">Dziennik aktywności</a></li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'LogoutSite' %}">Wyloguj</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+
+
+
+    {% comment %} NAVBAR LEWA STRONA {% endcomment %}
+    {% comment %}
+    ###################################################################################################################
+    {% endcomment %}
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Funkcjonalności</div>
+                        <a class="nav-link" href="{% url 'CalendarSite' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Calendar
+                        </a>
+
+                        <a class="nav-link" href="{% url 'HomePageSite' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            HomePage
+                        </a>
+
+
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="col-auto"><div class="small m-0 text-white">Copyright &copy; Jakub Wanat - TrainingPlan 2023</div></div>
+                    
+                </div>
+            </nav>
+        </div>
+
+
+
+        <div id="layoutSidenav_content">
+            <main>
+                
+
+
+
+                     <div class="grid-child green">
+                        <center>
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+                            {% comment %} <ul> 
+                                 {% for query in queryset %}
+                                <li>{{query.created_at}}</li>
+                                {% endfor%} 
+                            </ul> {% endcomment %}
+                            <h1>Logs </h1>
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Exercise</th>
+                                    <th scope="col">Repeats</th>
+                                    <th scope="col">Note</th>
+                                    <th scope="col">Date</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                            
+                                {% for query in queryset %}
+                                <tr>
+                                    <th scope="row">{{forloop.counter}}</th>
+                                    <td>{{query.id_Exercises__title}}</td>
+                                    <td>{{query.repeats}}</td>
+                                    <td>{{query.note}}</td>
+                                    <td>{{query.created_at}}</td>
+                                </tr>
+
+                                {% endfor %}
+                              
+
+
+
+
+                    
+
+
+                                </tbody>
+                              </table>
+                            {% comment %} <button type="button" class="btn btn-success btn-lg" id="abc">GET</button> {% endcomment %}
+
+                            
+
+                            
+
+                            
+
+                    </div> 
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </main>
+            <!-- <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2022</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer> -->
+        </div>
+    </div>
+
+</body>
+
+</html>
