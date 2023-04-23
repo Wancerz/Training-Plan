@@ -103,6 +103,11 @@ def log_calendar(request):
 
 
 
+def info_site(request):
+
+
+    return render(request,'info.html')
+
 
 
 

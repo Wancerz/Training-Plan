@@ -17,6 +17,7 @@ urlpatterns = [
     path('magcalendar/', views.CalendarSite, name = "CalendarSite"),
     path("logout/",v.LogoutSite, name = "LogoutSite"),
     path("log/",views.log_calendar, name="LogSite"),
+    path("info/",views.info_site,name="InfoSite"),
 
 
     #AJAX

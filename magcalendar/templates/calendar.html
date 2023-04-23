@@ -717,17 +717,21 @@
                                     });
                                   }
 
-                                  
-
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
-
 
                             </script>
+
+
+                            <script>
+                                document.getElementById("Rep").addEventListener("submit", function(event) {
+                                  var input = document.getElementById("my_number");
+                                  if (input.value < 0) {
+                                    alert("Value must be a positive integer.");
+                                    event.preventDefault();
+                                  }
+                                });
+                              </script>
+
+
 
 
                             <button id='button_success_to_db' type="button" class="btn btn-success">ADD</button>
@@ -736,6 +740,15 @@
                                 $('#button_success_to_db').click(function() {
                                     var exercValue = $('#Exerc').val();
                                     var repValue = $('#Rep').val();
+
+                                    if (repValue < 0){
+                                    alert("Repeats value must be positive");
+
+                                    event.preventDefault();
+                                    return false;
+                                }
+
+
                                     var notValue = $('#Not').val();
                                     var currentDate = $('#current-datestring').text();
                                     if (!$.isNumeric(repValue)) {
