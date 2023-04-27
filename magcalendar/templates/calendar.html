@@ -551,6 +551,22 @@
                                 </div>
                             </ul> {% endcomment %}
 
+                            <button id="languagebutton" onclick="changeLanguage()">English Exercises</button>
+
+
+                            <script>
+                                function changeLanguage() {
+                                  var button = document.getElementById("languagebutton");
+                                  if (button.innerHTML === "English Exercises") {
+                                    button.innerHTML = "Polish Exercises";
+                                    loadTableData();
+                                  } else {
+                                    button.innerHTML = "English Exercises";
+                                    loadTableData();
+                                  }
+                                }
+                                </script>
+
 
                             <table id='minutes' class="table">
                                 <thead>
@@ -618,21 +634,48 @@
                                   
                                   function loadTableData() {
                                     var currentDate = $('#current-datestring').text();
+                                    var button = document.getElementById("languagebutton");
+                                    var ButSelect;
+                                    if (button.innerHTML === "English Exercises") {
+                                        ButSelect = "0";
+                                        
+                                    } else {
+                                        ButSelect = "1"
+                                        
+                                    }
+                                    
                                     $.ajax({
                                       url: "{% url 'show_day_calendar' %}",
                                       type: 'get',
                                       contentType: "application/json; charset=utf-8",
                                       data: {
-                                        date: currentDate
+                                        date: currentDate,
+                                        ButSelect: ButSelect
                                       },
                                       success: function(response){
+                                        var textValue = $("#languagebutton").text();
+                                        
+                                        if (textValue === "English Exercises") {
+                                            ButSelect = "0";
+                                            
+                                        } else {
+                                            ButSelect = "1"
+                                            
+                                        }
+                                        
                                         var data = JSON.parse(response.queryset);
                                         var table = $("#minutes tbody");
                                         table.empty(); // clear the table body
+                                        
                                         for (var i = 0; i < data.length; i++) {
                                           var note = data[i].note;
                                           var repeats = data[i].repeats;
-                                          var exerciseTitle = data[i].id_Exercises__title;
+                                          if (ButSelect == "0"){
+                                            
+                                          var exerciseTitle = data[i].id_Exercises__title;}
+                                          else{
+                                            var exerciseTitle = data[i].id_Exercises__title_polish;
+                                          }
                                   
                                           var row = $("<tr>").appendTo(table);
                                           $("<td>").text(i + 1).appendTo(row);
@@ -672,8 +715,15 @@
                                         $("<td >").append($("<select id ='Exerc'>")).appendTo(newRow);
                                         $("<td>").append($("<input id='Rep' min='0' required>").attr("type", "number")).appendTo(newRow);
                                         $("<td>").append($("<input id='Not'>").attr("type", "text")).appendTo(newRow);
-
-
+                                        var button = document.getElementById("languagebutton");
+                                        if (button.innerHTML === "English Exercises") {
+                                            var ButSelect = "0";
+                                            
+                                        } else {
+                                            var ButSelect = "1"
+                                           
+                                        }
+                                        
 
 
                                         //nowy kod tutaj będą zmiany
@@ -682,13 +732,23 @@
                                         $.ajax({
                                             url: "{% url 'add_values_to_options' %}",
                                             method: 'GET',
+                                            data: {
+                                                ButSelect: ButSelect,
+
+                                              },
                                             success: function(response) {
                                               // Loop through the response data and add each option to the select element
                                               var data = JSON.parse(response.queryset);
                                               
-                                              var newOptions = data.map(function(item) {
-                                                return { value: item.title, text: item.title };
-                                              });
+                                              if (ButSelect == "0"){
+                                                var newOptions = data.map(function(item) {
+                                                    return { value: item.title, text: item.title };
+                                              });}else{
+                                                var newOptions = data.map(function(item) {
+                                                    return { value: item.title_polish, text: item.title_polish };
+                                                  });
+                                              }
+
                                               var jsonStr = JSON.stringify(newOptions);
                                               var selectElement = $('#Exerc');
                                               
@@ -755,7 +815,15 @@
                                         alert('Repeats value must be a number!');
                                         return false;
                                       }
-                                  
+
+                                    var button = document.getElementById("languagebutton");
+                                    if (button.innerHTML === "English Exercises") {
+                                        var ButSelect = "0";
+                                        
+                                    } else {
+                                        var ButSelect = "1"
+                                        
+                                    }
                                     // Continue with the script if repValue is a number
                                     // For example, you can send the values to the server using an AJAX request
                                     $.ajax({
@@ -765,7 +833,8 @@
                                         exerc: exercValue,
                                         rep: repValue,
                                         not: notValue,
-                                        currentDate: currentDate
+                                        currentDate: currentDate,
+                                        ButSelect: ButSelect
                                         
                                       },
                                       success: function(response) {

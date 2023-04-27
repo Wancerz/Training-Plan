@@ -42,10 +42,17 @@ def show_day_calendar(request):
     date = datetime.strptime(date,"%b %d %Y").date()
     
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-  
-        queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id).select_related('id_Exercises').values('note','repeats','id_Exercises__title' )
-        queryset = json.dumps(list(queryset))
+        option = request.GET.get('ButSelect')
+        if option == '0':
+            queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id).select_related('id_Exercises').values('note','repeats','id_Exercises__title' )
+        else:
+            queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id).select_related('id_Exercises').values('note','repeats','id_Exercises__title_polish' )        
 
+
+
+        # queryset = Calendar_exercises.objects.filter(created_at=date).filter(id_User_id=request.user.id).select_related('id_Exercises').values('note','repeats','id_Exercises__title' )
+        queryset = json.dumps(list(queryset))
+        # option = json.dumps(option)
         return JsonResponse({'queryset':queryset})
 
     return render(request,'calendar.html' )
@@ -70,8 +77,11 @@ def delete_row(request):
 
 def add_values_to_options(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-
-        queryset = Exercises.objects.values('title')
+        option = request.GET.get('ButSelect')
+        if option == '0':
+            queryset = Exercises.objects.values('title')
+        else:
+            queryset = Exercises.objects.values('title_polish')
         queryset = json.dumps(list(queryset)) 
         print(queryset)
         return JsonResponse({'queryset':queryset})
@@ -89,7 +99,11 @@ def add_exercise_to_db(request):
         date = request.GET.get('currentDate')
         date = date[4:]
         date = datetime.strptime(date,"%b %d %Y").date()
-        exercise = Exercises.objects.get(title=exercise)
+        option = request.GET.get('ButSelect')
+        if option == '0':
+            exercise = Exercises.objects.get(title=exercise)
+        else:
+            exercise = Exercises.objects.get(title_polish=exercise)
         queryset = Calendar_exercises(note=note, repeats=rep, id_Exercises=exercise, id_User_id = request.user.id, created_at=date)
         queryset.save()
     return render(request,'calendar.html')
