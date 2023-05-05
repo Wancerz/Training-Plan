@@ -465,11 +465,18 @@
 
         <div id="layoutSidenav_content">
             <main>
-                
+                <div class="grid-container">
+
+                    <div class="grid-child purple">
+                        <center>
+                            <h1>Add exercise</h1>
+                        </center>
 
 
 
                      <div class="grid-child green">
+
+
                         <center>
                             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
                             {% comment %} <ul> 
@@ -477,50 +484,91 @@
                                 <li>{{query.created_at}}</li>
                                 {% endfor%} 
                             </ul> {% endcomment %}
-                            <h1>Logs </h1>
+                            
                             <table class="table">
                                 <thead>
                                   <tr>
-                                    <th scope="col">ID</th>
+                                    
                                     <th scope="col">Exercise</th>
-                                    <th scope="col">Repeats</th>
-                                    <th scope="col">Note</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col">Ćwiczenie</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                            
-                                {% for query in queryset %}
-                                <tr>
-                                    <th scope="row">{{forloop.counter}}</th>
-                                    <td>{{query.id_Exercises__title}}</td>
-                                    <td>{{query.repeats}}</td>
-                                    <td>{{query.note}}</td>
-                                    <td>{{query.created_at}}</td>
-                                </tr>
-
-                                {% endfor %}
-                              
-
-
-
-
-                    
-
+                                  <tr>
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                    <td>  <input type="text" name="english_title" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg"></td>
+                                    <td>  <input type="text" name="polish_title" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg"></td>
+                                    <td><input type="file"  name="myfile"></td>
+                                    <td><button type="submit" class="btn btn-success">ADD</button></td>
+                                    </form>
+                                  </tr>
 
                                 </tbody>
                               </table>
                             {% comment %} <button type="button" class="btn btn-success btn-lg" id="abc">GET</button> {% endcomment %}
-
-                            
-
-                            
-
-                            
-
+                            {% if uploaded_file_url %}
+                            <p>Exercise added</a></p>
+                          {% endif %}
+                        </center>
                     </div> 
-
                 </div>
+
+                <div class="grid-child green">
+                    <center>
+                        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+                        {% comment %} <ul> 
+                             {% for query in queryset %}
+                            <li>{{query.created_at}}</li>
+                            {% endfor%} 
+                        </ul> {% endcomment %}
+                        <h1>Options </h1>
+                        {% comment %} <button type="button" class="btn btn-success btn-lg" id="abc">GET</button> {% endcomment %}
+                        
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Exercise</th>
+
+                              </tr>
+                            </thead>
+                            <tbody>
+                        
+                            {% for query in show_my_exercises %}
+                            <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td>{{query.title}}</td>
+                                <td>{{query.title_polish}}</td>
+                                <td><input class="btn btn-success" type="button" onclick="location.href='{% url 'AddExerciseSite' %}?to_delete={{ query.id|urlencode }}';" value="Delete exercise" /></td>                           
+                             </tr>
+
+                            {% endfor %}
+                          
+
+
+
+
+                
+
+
+                            </tbody>
+                          </table>
+
+
+
+                            
+
+
+
+
+
+
+                </div> 
+
+                
 
 
 

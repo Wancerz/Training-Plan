@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 
 
 def register(request):
-    # print(request.POST)
     if request.user.is_authenticated:
          return redirect("CalendarSite")
     else:
@@ -25,7 +24,6 @@ def register(request):
                 return redirect('LoginSite')
 
         else:
-                # print(form.errors)
                 form = SignUpForm()
 
     context = {'form':form
@@ -36,9 +34,6 @@ def register(request):
 
 def LoginSite(request):
     
-    print(request.POST)
-
-
     if request.user.is_authenticated:
          return redirect("CalendarSite")
     else:
@@ -46,7 +41,6 @@ def LoginSite(request):
             form = LogInForm(request.POST)
             username = request.POST.get('username')
             password = request.POST.get('password1')
-            
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
@@ -56,7 +50,6 @@ def LoginSite(request):
                 messages.info(request, "Username or password is incorrect")
         else:
             form = LogInForm()
-
 
     context = {
          'form':form

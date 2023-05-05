@@ -443,6 +443,14 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             HomePage
                         </a>
+                        <a class="nav-link" href="{% url 'LogSite' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            LogSite
+                        </a>
+                        <a class="nav-link" href="{% url 'AddExerciseSite' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Add exercise
+                        </a>
 
 
                     </div>
@@ -466,6 +474,10 @@
                         <center>
                             <h1>Calendar</h1>
                         </center>
+                        {% comment %} <input type="hidden" id="custId" name="custId" value="3487"> {% endcomment %}
+
+                        {% comment %} <iframe width="560" height="315" src="https://www.youtube.com/embed/9YffrCViTVk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> {% endcomment %}
+                        {% comment %} <iframe width="560" height="315" src="https://youtu.be/gipOslesVtw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> {% endcomment %}
 
                         <div id="showcase-wrapper">
                             <div id="myCalendarWrapper"></div>
@@ -572,10 +584,12 @@
                                 <thead>
                                   <tr>
                                     <th scope="col">#</th>
+                                    
                                     <th scope="col">Exercise</th>
+                                    
                                     <th scope="col">Repeats</th>
                                     <th scope="col">Note</th>
-
+                                    
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -637,13 +651,7 @@
                                     var button = document.getElementById("languagebutton");
                                     var ButSelect;
                                     if (button.innerHTML === "English Exercises") {
-                                        ButSelect = "0";
-                                        
-                                    } else {
-                                        ButSelect = "1"
-                                        
-                                    }
-                                    
+                                        ButSelect = "0";} else { ButSelect = "1";}
                                     $.ajax({
                                       url: "{% url 'show_day_calendar' %}",
                                       type: 'get',
@@ -653,15 +661,20 @@
                                         ButSelect: ButSelect
                                       },
                                       success: function(response){
-                                        var textValue = $("#languagebutton").text();
-                                        
+
+
+
+
+
+
+
+
+
+
+
+                                        var textValue = $("#languagebutton").text();   
                                         if (textValue === "English Exercises") {
-                                            ButSelect = "0";
-                                            
-                                        } else {
-                                            ButSelect = "1"
-                                            
-                                        }
+                                            ButSelect = "0";} else {ButSelect = "1";}
                                         
                                         var data = JSON.parse(response.queryset);
                                         var table = $("#minutes tbody");
@@ -670,18 +683,20 @@
                                         for (var i = 0; i < data.length; i++) {
                                           var note = data[i].note;
                                           var repeats = data[i].repeats;
-                                          if (ButSelect == "0"){
-                                            
-                                          var exerciseTitle = data[i].id_Exercises__title;}
-                                          else{
-                                            var exerciseTitle = data[i].id_Exercises__title_polish;
-                                          }
-                                  
+                                          var id_b = data[i].id_Exercises;
+                                          if (ButSelect == "0"){var exerciseTitle = data[i].id_Exercises__title;}
+                                          else{var exerciseTitle = data[i].id_Exercises__title_polish;}
+        
                                           var row = $("<tr>").appendTo(table);
                                           $("<td>").text(i + 1).appendTo(row);
                                           $("<td>").text(exerciseTitle).appendTo(row);
                                           $("<td>").text(repeats).appendTo(row);
                                           $("<td>").text(note).appendTo(row);
+                                          var infoButton = $("<button  >").attr("value",  id_b ).attr("data-bs-toggle", "modal").attr("data-bs-target", "#exampleModal").addClass("btn btn-primary").text("Info").appendTo($("<td>").appendTo(row));
+
+
+                                                //<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+
                                           var deleteButton = $("<button>").addClass("btn btn-danger").text("Delete").appendTo($("<td>").appendTo(row));
                                           deleteButton.click(function() {
                                             var rowValues = $(this).closest("tr").find("td:not(:last-child)").map(function() {
@@ -707,6 +722,41 @@
                                               }
                                             });
                                           });
+
+
+                                          infoButton.click(function() {
+                                            
+
+                                            var ButtonValue = $(this).val();
+                                            //alert(ButtonValue);
+                                             // get the scope value
+                                            // now you can use the rowValues array to do something with the values
+                                            
+                                  
+                                            $.ajax({
+                                              url: "{% url 'info_row' %}",
+                                              type: 'get',
+                                              contentType: "application/json; charset=utf-8",
+                                              data: {
+                                                ButtonValue: ButtonValue,
+
+                                              },
+                                              success: function(response){
+                                                var data = JSON.parse(response.queryset);
+                                                var newSrc = data.video_url;
+                                                $("#iframe_to_info").attr("src", newSrc);
+                                                $("#iframe_to_text_info").text(data.note);
+                                                
+                                                //alert(data.video_url);
+
+
+
+                                                //loadTableData();
+                                              }
+                                            });
+                                          });
+
+
                                         }
                                         
                                         // Add a new row at the bottom of the table with a select list and two input fields
@@ -717,18 +767,11 @@
                                         $("<td>").append($("<input id='Not'>").attr("type", "text")).appendTo(newRow);
                                         var button = document.getElementById("languagebutton");
                                         if (button.innerHTML === "English Exercises") {
-                                            var ButSelect = "0";
-                                            
+                                            var ButSelect = "0";                       
                                         } else {
                                             var ButSelect = "1"
                                            
                                         }
-                                        
-
-
-                                        //nowy kod tutaj będą zmiany
-
-
                                         $.ajax({
                                             url: "{% url 'add_values_to_options' %}",
                                             method: 'GET',
@@ -737,7 +780,6 @@
 
                                               },
                                             success: function(response) {
-                                              // Loop through the response data and add each option to the select element
                                               var data = JSON.parse(response.queryset);
                                               
                                               if (ButSelect == "0"){
@@ -748,22 +790,17 @@
                                                     return { value: item.title_polish, text: item.title_polish };
                                                   });
                                               }
-
                                               var jsonStr = JSON.stringify(newOptions);
                                               var selectElement = $('#Exerc');
-                                              
-                                              // Add the new options to the select element
                                               $.each(newOptions, function(index, option) {
-                                              selectElement.append('<option value="' + option.value + '">' + option.text + '</option>');
+                                              selectElement.append('<option  value="' + option.value + '">' + option.text + '</option>');
                                               });
-
-
                                             },
                                             error: function(error) {
                                               console.log(error);
                                             }
                                           });
-                                          
+                                          photos();
 
 
                                         // Define the new options
@@ -776,10 +813,95 @@
                                       }
                                     });
                                   }
+                                //to dodane jest 05.05
+                                $(document).ready(function() {
+                                    $(document).on('change', '#Exerc', function() {
+                                      var selectedValue = $(this).val();
+                                      var newSrc = '/static/pictures/' + selectedValue + '.jpg';
+                                      
+                                      var button = document.getElementById("languagebutton");
+                                      if (button.innerHTML === "English Exercises") {
+                                          var ButSelect = "0";                       
+                                      } else {
+                                          var ButSelect = "1"
+                                         
+                                      }
+                                      // Send an AJAX request to the server to retrieve data based on the selected value
+                                      $.ajax({
+                                        url: "{% url 'url_of_photo' %}",
+                                        type: 'get',
+                                        data: {selectedValue: selectedValue,
+                                               ButSelect: ButSelect
+                                        },
+                                        success: function(response) {
+                                           var data = JSON.parse(response.queryset); 
+                                           var newSrc = '/static/pictures/' + data.photo_url;
+                                          // Handle the response from the server here
+                                          $('#photo_image').attr('src', newSrc);
+                                          
 
+
+                                          
+                                          console.log(data); // Replace with your own code to handle the response
+                                        },
+                                        error: function() {
+                                          // Handle any errors here
+                                        }
+                                      });
+                                    });
+                                  });
+            
+
+                                  function photos(){
+                                    $(document).ready(function() {
+                                        
+                                          var selectedValue = $(this).val();
+                                          var newSrc = '/static/pictures/' + selectedValue + '.jpg';
+                                          
+                                          var button = document.getElementById("languagebutton");
+                                          if (button.innerHTML === "English Exercises") {
+                                              var ButSelect = "0";                       
+                                          } else {
+                                              var ButSelect = "1"
+                                             
+                                          }
+                                          // Send an AJAX request to the server to retrieve data based on the selected value
+                                          $.ajax({
+                                            url: "{% url 'url_of_photo' %}",
+                                            type: 'get',
+                                            data: {selectedValue: selectedValue,
+                                                   ButSelect: ButSelect
+                                            },
+                                            success: function(response) {
+                                               var data = JSON.parse(response.queryset); 
+                                               var newSrc = '/static/pictures/' + data.photo_url;
+                                              // Handle the response from the server here
+                                              $('#photo_image').attr('src', newSrc);
+                                              
+    
+    
+                                              
+                                              console.log(data); // Replace with your own code to handle the response
+                                            },
+                                            error: function() {
+                                              // Handle any errors here
+                                            }
+                                          });
+                                        
+                                      });
+                                  }
 
                             </script>
+                            <script>
 
+                                const selectElement = document.querySelector("#Exerc");
+                                const result = document.querySelector(".result");
+
+                                selectElement.addEventListener("change", (event) => {
+                                    result.textContent = `You like ${event.target.value}`;
+                                    alert("AA");
+                                  });
+                            </script>
 
                             <script>
                                 document.getElementById("Rep").addEventListener("submit", function(event) {
@@ -790,32 +912,80 @@
                                   }
                                 });
                               </script>
+                              
+                            <style>
+
+                                .parent-div {
+                                    position: relative;
+                                    height: 50px;
+                                    width: 100px;
+                                    
+                                }
+                                
+                                .child-div {
+                                    position: absolute;
+                                    top: 100%;
+                                    left: 0;
+                                    height: 200px;
+                                    width: 400px;
+                                    
+                                }
+                            </style>
+
+                            <div class="parent-div">
+
+                                <button id='button_success_to_db' type="button" class="btn btn-success">ADD</button>
+                              </div>
+                              <div class="child-div">
+                              </div>
+
+                              <img id="photo_image" width="200" height="200" src="{% static 'pictures/.jpg' %}" alt="No exercise photo">
 
 
 
+<!-- Button trigger modal -->
+{% comment %} <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Launch demo modal
+  </button> {% endcomment %}
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Video and informations</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <iframe id="iframe_to_info" width="400" height="250" src="https://www.youtube.com/embed/gipOslesVtw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p id='iframe_to_text_info'></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
 
-                            <button id='button_success_to_db' type="button" class="btn btn-success">ADD</button>
-
+                            
+                            
                             <script>
+
+
                                 $('#button_success_to_db').click(function() {
                                     var exercValue = $('#Exerc').val();
                                     var repValue = $('#Rep').val();
-
                                     if (repValue < 0){
                                     alert("Repeats value must be positive");
-
-                                    event.preventDefault();
                                     return false;
                                 }
-
-
                                     var notValue = $('#Not').val();
                                     var currentDate = $('#current-datestring').text();
                                     if (!$.isNumeric(repValue)) {
                                         alert('Repeats value must be a number!');
                                         return false;
                                       }
-
                                     var button = document.getElementById("languagebutton");
                                     if (button.innerHTML === "English Exercises") {
                                         var ButSelect = "0";
@@ -824,8 +994,6 @@
                                         var ButSelect = "1"
                                         
                                     }
-                                    // Continue with the script if repValue is a number
-                                    // For example, you can send the values to the server using an AJAX request
                                     $.ajax({
                                       url: "{% url 'add_exercise_to_db' %}",
                                       method: 'GET',
@@ -838,7 +1006,6 @@
                                         
                                       },
                                       success: function(response) {
-                                        
                                         loadTableData();
                                       },
                                       error: function(xhr, status, error) {
@@ -846,6 +1013,11 @@
                                       }
                                     });
                                   });
+
+
+
+
+
                             </script>
 
 
