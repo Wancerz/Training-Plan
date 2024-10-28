@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'TrainingPlan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'trainingplan',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD' : 'Agent44440!'
+        'NAME': '',
+        'HOST': '',
+        'USER': '',
+        'PASSWORD' : ''
     }
 }
 

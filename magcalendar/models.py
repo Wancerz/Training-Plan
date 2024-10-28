@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 
 
 class Exercises(models.Model):
-    title = models.CharField(max_length=255)
-
+    title = models.CharField(max_length=255, default='')
+    title_polish = models.CharField(max_length=255, default='')
 
 class Calendar_exercises(models.Model):
     id_Exercises = models.ForeignKey('Exercises',on_delete=models.CASCADE, default=1)

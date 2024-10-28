@@ -606,11 +606,8 @@
                                   $(document).ready(function() {                                  
                                     var currentValue = $('#current-datestring').text();                                 
                                     $('#current-datestring').bind('DOMSubtreeModified', function() {
-                                      // check if the value has changed
                                       if ($(this).text() !== currentValue) {                                                                              
                                         loadTableData();
-                                  
-                                        // update the currentValue variable with the new value
                                         currentValue = $(this).text();
                                       }
                                     });
@@ -628,26 +625,24 @@
                                       success: function(response){
                                         var data = JSON.parse(response.queryset);
                                         var table = $("#minutes tbody");
-                                        table.empty(); // clear the table body
+                                        table.empty();
+
                                         for (var i = 0; i < data.length; i++) {
                                           var note = data[i].note;
                                           var repeats = data[i].repeats;
-                                          var exerciseTitle = data[i].id_Exercises__title;
-                                  
+                                          var exerciseTitle = data[i].id_Exercises__title;                      
                                           var row = $("<tr>").appendTo(table);
                                           $("<td>").text(i + 1).appendTo(row);
                                           $("<td>").text(exerciseTitle).appendTo(row);
                                           $("<td>").text(repeats).appendTo(row);
                                           $("<td>").text(note).appendTo(row);
                                           var deleteButton = $("<button>").addClass("btn btn-danger").text("Delete").appendTo($("<td>").appendTo(row));
+
                                           deleteButton.click(function() {
                                             var rowValues = $(this).closest("tr").find("td:not(:last-child)").map(function() {
                                               return $(this).text();
                                             }).get();
-                                            var scopeValue = $(this).closest("tr").find("th[scope='row']").text(); // get the scope value
-                                            // now you can use the rowValues array to do something with the values
-                                            console.log("Note: " + rowValues[1] + ", Repeats: " + rowValues[2] + ", Exercise Title: " + rowValues[3]);
-                                  
+                                            var scopeValue = $(this).closest("tr").find("th[scope='row']").text();                        
                                             $.ajax({
                                               url: "{% url 'delete_row' %}",
                                               type: 'get',
@@ -666,53 +661,33 @@
                                           });
                                         }
                                         
-                                        // Add a new row at the bottom of the table with a select list and two input fields
                                         var newRow = $("<tr>").appendTo(table);
                                         $("<td>").text("X").appendTo(newRow);
                                         $("<td >").append($("<select id ='Exerc'>")).appendTo(newRow);
                                         $("<td>").append($("<input id='Rep' min='0' required>").attr("type", "number")).appendTo(newRow);
                                         $("<td>").append($("<input id='Not'>").attr("type", "text")).appendTo(newRow);
 
-
-
-
-                                        //nowy kod tutaj będą zmiany
-
-
                                         $.ajax({
                                             url: "{% url 'add_values_to_options' %}",
                                             method: 'GET',
                                             success: function(response) {
-                                              // Loop through the response data and add each option to the select element
                                               var data = JSON.parse(response.queryset);
-                                              
+
                                               var newOptions = data.map(function(item) {
                                                 return { value: item.title, text: item.title };
                                               });
+
                                               var jsonStr = JSON.stringify(newOptions);
                                               var selectElement = $('#Exerc');
                                               
-                                              // Add the new options to the select element
                                               $.each(newOptions, function(index, option) {
                                               selectElement.append('<option value="' + option.value + '">' + option.text + '</option>');
                                               });
-
-
                                             },
                                             error: function(error) {
                                               console.log(error);
                                             }
-                                          });
-                                          
-
-
-                                        // Define the new options
-
-
-                                        // Get the select element by its ID
-
-
-                                            
+                                          });          
                                       }
                                     });
                                   }
@@ -737,27 +712,17 @@
                             <button id='button_success_to_db' type="button" class="btn btn-success">ADD</button>
 
                             <script>
+
                                 $('#button_success_to_db').click(function() {
                                     var exercValue = $('#Exerc').val();
                                     var repValue = $('#Rep').val();
-
                                     if (repValue < 0){
                                     alert("Repeats value must be positive");
-
-                                    event.preventDefault();
                                     return false;
                                 }
-
-
                                     var notValue = $('#Not').val();
                                     var currentDate = $('#current-datestring').text();
-                                    if (!$.isNumeric(repValue)) {
-                                        alert('Repeats value must be a number!');
-                                        return false;
-                                      }
-                                  
-                                    // Continue with the script if repValue is a number
-                                    // For example, you can send the values to the server using an AJAX request
+
                                     $.ajax({
                                       url: "{% url 'add_exercise_to_db' %}",
                                       method: 'GET',
@@ -765,11 +730,9 @@
                                         exerc: exercValue,
                                         rep: repValue,
                                         not: notValue,
-                                        currentDate: currentDate
-                                        
+                                        currentDate: currentDate       
                                       },
                                       success: function(response) {
-                                        
                                         loadTableData();
                                       },
                                       error: function(xhr, status, error) {
@@ -777,6 +740,7 @@
                                       }
                                     });
                                   });
+
                             </script>
 
 
